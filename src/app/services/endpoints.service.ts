@@ -3,27 +3,25 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import 'rxjs/add/operator/toPromise';
 
 @Injectable()
-export class AuthenticationService {
+export class EndpointsService {
 
   protected headers: HttpHeaders;
 
   constructor(
     private http: HttpClient
   ) {
-    this.headers = new HttpHeaders()
-      .set('Authorization', `${localStorage.getItem('zf3_jwt_api_jwt')}`)
-      .set('X-Refresh-Token', `${localStorage.getItem('zf3_jwt_api_refresh')}`);
+    this.headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('zf3_jwt_api_jwt')}`);
   }
 
-  authenticate(email: string, password: string): Promise<any> {
-    return this.http.post('//localhost:8080/login', {email: email, password: password}, {headers: this.headers})
+  callProtectedEndpoint(): Promise<any> {
+    return this.http.get('//localhost:8080/protected', {headers: this.headers})
       .toPromise()
       .then(response => response)
       .catch(this.handleError);
   }
 
-  refresh(): Promise<any> {
-    return this.http.post('//localhost:8080/refresh', {}, {headers: this.headers})
+  callUnprotectedEndpoint(): Promise<any> {
+    return this.http.get('//localhost:8080/unprotected', {headers: this.headers})
       .toPromise()
       .then(response => response)
       .catch(this.handleError);
